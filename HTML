@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Clinical Onboarding Tracker</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --align-blue: #0056A3;
+      --align-light-blue: #E6F2FF;
+      --completed-green: #4CAF50;
+      --shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background: #f5f7fa;
+      padding-bottom: 60px;
+    }
+
+    .header {
+      background: linear-gradient(135deg, var(--align-blue) 0%, #003d7a 100%);
+      color: white;
+      padding: 20px;
+      text-align: center;
+      box-shadow: var(--shadow);
+    }
+
+    .header h1 {
+      font-size: 24px;
+      margin-bottom: 5px;
+    }
+
+    .header p {
+      font-size: 14px;
+      opacity: 0.9;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    /* Progress Dashboard */
+    .dashboard {
+      background: white;
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 24px;
+      box-shadow: var(--card-shadow);
+    }
+
+    .dashboard h2 {
+      font-size: 20px;
+      color: var(--align-blue);
+      margin-bottom: 20px;
+    }
+
+    .progress-section {
+      margin-bottom: 24px;
+    }
+
+    .progress-label {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 8px;
+      font-size: 14px;
+      color: #333;
+      font-weight: 500;
+    }
+
+    .progress-bar-container {
+      width: 100%;
+      height: 24px;
+      background: #e9ecef;
+      border-radius: 12px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .progress-bar {
+      height: 100%;
+      background: linear-gradient(90deg, var(--align-blue) 0%, #0076d6 100%);
+      border-radius: 12px;
+      transition: width 0.4s ease;
+      position: relative;
+    }
+
+    .progress-bar.completed {
+      background: linear-gradient(90deg, var(--completed-green) 0%, #66BB6A 100%);
+    }
+
+    .progress-text {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: white;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .sub-progress {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-top: 16px;
+    }
+
+    .week-progress-card {
+      background: var(--align-light-blue);
+      padding: 12px;
+      border-radius: 8px;
+    }
+
+    .week-progress-card h4 {
+      font-size: 13px;
+      color: var(--align-blue);
+      margin-bottom: 8px;
+    }
+
+    .mini-progress {
+      height: 8px;
+      background: white;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .mini-progress-bar {
+      height: 100%;
+      background: var(--align-blue);
+      border-radius: 4px;
+      transition: width 0.4s ease;
+    }
