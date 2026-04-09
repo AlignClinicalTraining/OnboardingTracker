@@ -552,28 +552,26 @@
     </div>
   </div>
 
-  <!-- ✅ Firebase SDKs: MUST come before your custom script -->
-  https://www.gstatic.com/firebasejs/12.11.0/firebase-app-compat.js
+  <!-- Firebase SDKs -->
+  https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js
   <script src="https://www.gstatic.com/firebasejs/12.11.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore-compat.js"></script>
 
-  <!-- ✅ Your Firebase config and initialization -->
   <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyDvmuMGB5IMb_AVZ-HrleWVvCk0RUvDTME",
-      authDomain: "onboardingtracker-72f1a.firebaseapp.com",
-      projectId: "onboardingtracker-72f1a",
-      storageBucket: "onboardingtracker-72f1a.appspot.com",
-      messagingSenderId: "573511577481",
-      appId: "1:573511577481:web:c45d4ab81d36dc3a22bb58"
-    };
+    // ========== FIREBASE CONFIGURATION ==========
+    // REPLACE THIS WITH YOUR FIREBASE CONFIG FROM STEP 2
+  const firebaseConfig = {
+    apiKey: "AIzaSyDvmuMGB5IMb_AVZ-HrleWVvCk0RUvDTME",
+    authDomain: "onboardingtracker-72f1a.firebaseapp.com",
+    projectId: "onboardingtracker-72f1a",
+    storageBucket: "onboardingtracker-72f1a.firebasestorage.app",
+    messagingSenderId: "573511577481",
+    appId: "1:573511577481:web:c45d4ab81d36dc3a22bb58"
+  };
 
-
-
-  firebase.initializeApp(firebaseConfig);
-  const auth = firebase.auth();
-  const db = firebase.firestore();
-</script>
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
 
     let currentUser = null;
     let taskStates = {};
