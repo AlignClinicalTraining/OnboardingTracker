@@ -227,37 +227,77 @@
       font-weight: 600;
     }
 
-    .sub-progress {
+    /* New Monthly Buckets Styles */
+    .monthly-buckets {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 16px;
-      margin-top: 16px;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+      margin-top: 24px;
     }
 
-    .week-progress-card {
-      background: var(--align-light-blue);
-      padding: 12px;
-      border-radius: 8px;
-    }
-
-    .week-progress-card h4 {
-      font-size: 13px;
-      color: var(--align-blue);
-      margin-bottom: 8px;
-    }
-
-    .mini-progress {
-      height: 8px;
+    .month-bucket {
       background: white;
-      border-radius: 4px;
-      overflow: hidden;
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: var(--card-shadow);
+      border: 2px solid var(--align-light-blue);
     }
 
-    .mini-progress-bar {
-      height: 100%;
-      background: var(--align-blue);
-      border-radius: 4px;
-      transition: width 0.4s ease;
+    .month-bucket h3 {
+      color: var(--align-blue);
+      font-size: 18px;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .month-circle-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 24px;
+      position: relative;
+    }
+
+    .circle-progress {
+      position: relative;
+      width: 120px;
+      height: 120px;
+    }
+
+    .circle-progress canvas {
+      transform: rotate(-90deg);
+    }
+
+    .circle-label {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--align-blue);
+    }
+
+    .week-progress-bars {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .week-progress-bars .progress-section {
+      margin-bottom: 0;
+    }
+
+    .week-progress-bars .progress-label {
+      font-size: 13px;
+    }
+
+    .week-progress-bars .progress-bar-container {
+      height: 20px;
+    }
+
+    .week-progress-bars .progress-text {
+      font-size: 11px;
     }
 
     .tabs {
@@ -421,12 +461,6 @@
       color: #999;
     }
 
-    .loading {
-      text-align: center;
-      padding: 20px;
-      color: var(--align-blue);
-    }
-
     @media (max-width: 768px) {
       .container {
         padding: 12px;
@@ -445,12 +479,21 @@
         padding: 16px;
       }
 
-      .sub-progress {
+      .monthly-buckets {
         grid-template-columns: 1fr;
       }
 
       .email-box {
         padding: 24px;
+      }
+
+      .circle-progress {
+        width: 100px;
+        height: 100px;
+      }
+
+      .circle-label {
+        font-size: 20px;
       }
     }
   </style>
@@ -488,6 +531,8 @@
 
       <div class="dashboard">
         <h2>📊 Progress Dashboard</h2>
+        
+        <!-- Overall Completion -->
         <div class="progress-section">
           <div class="progress-label">
             <span><strong>Overall Completion</strong></span>
@@ -499,7 +544,182 @@
             </div>
           </div>
         </div>
-        <div class="sub-progress" id="week-progress-cards"></div>
+
+        <!-- Monthly Buckets with Circular Progress -->
+        <div class="monthly-buckets">
+          
+          <!-- Month 1 Bucket -->
+          <div class="month-bucket">
+            <h3>Month 1</h3>
+            <div class="month-circle-container">
+              <div class="circle-progress">
+                <canvas id="month1-circle" width="120" height="120"></canvas>
+                <div class="circle-label" id="month1-percent-label">0%</div>
+              </div>
+            </div>
+            <div class="week-progress-bars">
+              <div class="progress-section">
+                <div class="progress-label">
+                  <span>Week 1</span>
+                  <span id="month1-week1-percent">0%</span>
+                </div>
+                <div class="progress-bar-container">
+                  <div class="progress-bar" id="month1-week1-bar" style="width: 0%">
+                    <div class="progress-text">0%</div>
+                  </div>
+                </div>
+              </div>
+              <div class="progress-section">
+                <div class="progress-label">
+                  <span>Week 2</span>
+                  <span id="month1-week2-percent">0%</span>
+                </div>
+                <div class="progress-bar-container">
+                  <div class="progress-bar" id="month1-week2-bar" style="width: 0%">
+                    <div class="progress-text">0%</div>
+                  </div>
+                </div>
+              </div>
+              <div class="progress-section">
+                <div class="progress-label">
+                  <span>Week 3</span>
+                  <span id="month1-week3-percent">0%</span>
+                </div>
+                <div class="progress-bar-container">
+                  <div class="progress-bar" id="month1-week3-bar" style="width: 0%">
+                    <div class="progress-text">0%</div>
+                  </div>
+                </div>
+              </div>
+              <div class="progress-section">
+                <div class="progress-label">
+                  <span>Week 4</span>
+                  <span id="month1-week4-percent">0%</span>
+                </div>
+                <div class="progress-bar-container">
+                  <div class="progress-bar" id="month1-week4-bar" style="width: 0%">
+                    <div class="progress-text">0%</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Month 2 Bucket -->
+          <div class="month-bucket">
+            <h3>Month 2</h3>
+            <div class="month-circle-container">
+              <div class="circle-progress">
+                <canvas id="month2-circle" width="120" height="120"></canvas>
+                <div class="circle-label" id="month2-percent-label">0%</div>
+              </div>
+            </div>
+            <div class="week-progress-bars">
+              <div class="progress-section">
+                <div class="progress-label">
+                  <span>Week 5</span>
+                  <span id="month2-week5-percent">0%</span>
+                </div>
+                <div class="progress-bar-container">
+                  <div class="progress-bar" id="month2-week5-bar" style="width: 0%">
+                    <div class="progress-text">0%</div>
+                  </div>
+                </div>
+              </div>
+              <div class="progress-section">
+                <div class="progress-label">
+                  <span>Week 6</span>
+                  <span id="month2-week6-percent">0%</span>
+                </div>
+                <div class="progress-bar-container">
+                  <div class="progress-bar" id="month2-week6-bar" style="width: 0%">
+                    <div class="progress-text">0%</div>
+                  </div>
+                </div>
+              </div>
+              <div class="progress-section">
+                <div class="progress-label">
+                  <span>Week 7</span>
+                  <span id="month2-week7-percent">0%</span>
+                </div>
+                <div class="progress-bar-container">
+                  <div class="progress-bar" id="month2-week7-bar" style="width: 0%">
+                    <div class="progress-text">0%</div>
+                  </div>
+                </div>
+              </div>
+              <div class="progress-section">
+                <div class="progress-label">
+                  <span>Week 8</span>
+                  <span id="month2-week8-percent">0%</span>
+                </div>
+                <div class="progress-bar-container">
+                  <div class="progress-bar" id="month2-week8-bar" style="width: 0%">
+                    <div class="progress-text">0%</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Month 3 Bucket -->
+          <div class="month-bucket">
+            <h3>Month 3</h3>
+            <div class="month-circle-container">
+              <div class="circle-progress">
+                <canvas id="month3-circle" width="120" height="120"></canvas>
+                <div class="circle-label" id="month3-percent-label">0%</div>
+              </div>
+            </div>
+            <div class="week-progress-bars">
+              <div class="progress-section">
+                <div class="progress-label">
+                  <span>Week 9</span>
+                  <span id="month3-week9-percent">0%</span>
+                </div>
+                <div class="progress-bar-container">
+                  <div class="progress-bar" id="month3-week9-bar" style="width: 0%">
+                    <div class="progress-text">0%</div>
+                  </div>
+                </div>
+              </div>
+              <div class="progress-section">
+                <div class="progress-label">
+                  <span>Week 10</span>
+                  <span id="month3-week10-percent">0%</span>
+                </div>
+                <div class="progress-bar-container">
+                  <div class="progress-bar" id="month3-week10-bar" style="width: 0%">
+                    <div class="progress-text">0%</div>
+                  </div>
+                </div>
+              </div>
+              <div class="progress-section">
+                <div class="progress-label">
+                  <span>Week 11</span>
+                  <span id="month3-week11-percent">0%</span>
+                </div>
+                <div class="progress-bar-container">
+                  <div class="progress-bar" id="month3-week11-bar" style="width: 0%">
+                    <div class="progress-text">0%</div>
+                  </div>
+                </div>
+              </div>
+              <div class="progress-section">
+                <div class="progress-label">
+                  <span>Week 12</span>
+                  <span id="month3-week12-percent">0%</span>
+                </div>
+                <div class="progress-bar-container">
+                  <div class="progress-bar" id="month3-week12-bar" style="width: 0%">
+                    <div class="progress-text">0%</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
       </div>
 
       <div class="tabs" id="tabs-container">
@@ -540,6 +760,14 @@
   <script>
     // ========== FIREBASE CONFIGURATION ==========
     // TODO: Replace with your Firebase config from Firebase Console
+    // Steps to get config:
+    // 1. Go to https://console.firebase.google.com
+    // 2. Select your project
+    // 3. Click gear icon > Project settings
+    // 4. Scroll to "Your apps" section
+    // 5. Click </> icon to add web app (if not already added)
+    // 6. Copy the firebaseConfig object and paste below
+    
 const firebaseConfig = {
   apiKey: "AIzaSyDvmuMGB5IMb_AVZ-HrleWVvCk0RUvDTME",
   authDomain: "onboardingtracker-72f1a.firebaseapp.com",
@@ -839,7 +1067,6 @@ const firebaseConfig = {
         init();
       } catch (error) {
         console.error('Error loading progress:', error);
-        // Fallback to localStorage
         const saved = localStorage.getItem('taskStates_' + sanitizeEmail(currentUserEmail));
         taskStates = saved ? JSON.parse(saved) : {};
         init();
@@ -847,7 +1074,6 @@ const firebaseConfig = {
     }
 
     async function saveUserProgress() {
-      // Save to localStorage as backup
       localStorage.setItem('taskStates_' + sanitizeEmail(currentUserEmail), JSON.stringify(taskStates));
 
       if (!isFirebaseConfigured) {
@@ -976,13 +1202,109 @@ const firebaseConfig = {
       renderMonthContent(month, week);
     }
 
+    // ========== PROGRESS TRACKING ==========
     function updateAllProgress() {
       const total = getTotalTasks();
       const done = getCompletedTasks();
       const percent = total ? Math.round((done / total) * 100) : 0;
       updateProgressBar('overall-progress', percent);
       document.getElementById('overall-percent').textContent = `${percent}%`;
-      renderWeekProgressCards();
+      
+      // Update monthly buckets
+      updateMonthlyProgress();
+    }
+
+    function updateMonthlyProgress() {
+      // Month 1 (Weeks 1-4)
+      updateMonthProgress('month-1', 1, [1, 2, 3, 4]);
+      
+      // Month 2 (Weeks 5-8)
+      updateMonthProgress('month-2', 2, [5, 6, 7, 8]);
+      
+      // Month 3 (Weeks 9-12)
+      updateMonthProgress('month-3', 3, [9, 10, 11, 12]);
+    }
+
+    function updateMonthProgress(monthKey, monthNum, weeks) {
+      let monthTotal = 0;
+      let monthDone = 0;
+      
+      weeks.forEach(week => {
+        const weekData = taskData[monthKey][week];
+        if (!weekData) return;
+        
+        let weekTotal = 0;
+        let weekDone = 0;
+        
+        ['invisalign', 'itero'].forEach(type => {
+          weekData[type]?.forEach((task, i) => {
+            const id = `${monthKey}-week${week}-${type}-${i}`;
+            weekTotal++;
+            monthTotal++;
+            if (taskStates[id]?.completed) {
+              weekDone++;
+              monthDone++;
+            }
+          });
+        });
+        
+        const weekPercent = weekTotal ? Math.round((weekDone / weekTotal) * 100) : 0;
+        
+        // Update week progress bar
+        const weekBar = document.getElementById(`month${monthNum}-week${week}-bar`);
+        const weekPercentLabel = document.getElementById(`month${monthNum}-week${week}-percent`);
+        
+        if (weekBar) {
+          weekBar.style.width = `${weekPercent}%`;
+          const weekText = weekBar.querySelector('.progress-text');
+          if (weekText) weekText.textContent = `${weekPercent}%`;
+        }
+        
+        if (weekPercentLabel) {
+          weekPercentLabel.textContent = `${weekPercent}%`;
+        }
+      });
+      
+      // Calculate month percentage
+      const monthPercent = monthTotal ? Math.round((monthDone / monthTotal) * 100) : 0;
+      
+      // Update month circular progress
+      drawCircularProgress(`month${monthNum}-circle`, monthPercent);
+      
+      const monthLabel = document.getElementById(`month${monthNum}-percent-label`);
+      if (monthLabel) {
+        monthLabel.textContent = `${monthPercent}%`;
+      }
+    }
+
+    function drawCircularProgress(canvasId, percent) {
+      const canvas = document.getElementById(canvasId);
+      if (!canvas) return;
+      
+      const ctx = canvas.getContext('2d');
+      const centerX = canvas.width / 2;
+      const centerY = canvas.height / 2;
+      const radius = 50;
+      const lineWidth = 10;
+      
+      // Clear canvas
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      
+      // Draw background circle
+      ctx.beginPath();
+      ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
+      ctx.strokeStyle = '#E6F2FF';
+      ctx.lineWidth = lineWidth;
+      ctx.stroke();
+      
+      // Draw progress arc
+      const progressAngle = (percent / 100) * 2 * Math.PI;
+      ctx.beginPath();
+      ctx.arc(centerX, centerY, radius, -0.5 * Math.PI, -0.5 * Math.PI + progressAngle);
+      ctx.strokeStyle = percent === 100 ? '#4CAF50' : '#0056A3';
+      ctx.lineWidth = lineWidth;
+      ctx.lineCap = 'round';
+      ctx.stroke();
     }
 
     function getTotalTasks() {
@@ -1016,33 +1338,6 @@ const firebaseConfig = {
       } else {
         bar.classList.remove('completed');
       }
-    }
-
-    function renderWeekProgressCards() {
-      const container = document.getElementById('week-progress-cards');
-      let html = '';
-      for (let week = 1; week <= 12; week++) {
-        const month = week <= 4 ? 'month-1' : week <= 8 ? 'month-2' : 'month-3';
-        const weekData = taskData[month][week];
-        if (!weekData) continue;
-        let total = 0, done = 0;
-        ['invisalign', 'itero'].forEach(type => {
-          weekData[type]?.forEach((task, i) => {
-            const id = `${month}-week${week}-${type}-${i}`;
-            total++;
-            if (taskStates[id]?.completed) done++;
-          });
-        });
-        const percent = total ? Math.round((done / total) * 100) : 0;
-        html += `
-          <div class="week-progress-card">
-            <h4>Week ${week} - ${percent}%</h4>
-            <div class="mini-progress">
-              <div class="mini-progress-bar" style="width: ${percent}%"></div>
-            </div>
-          </div>`;
-      }
-      container.innerHTML = html;
     }
 
     function formatTimestamp(ts) {
