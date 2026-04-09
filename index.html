@@ -25,6 +25,132 @@
       padding-bottom: 60px;
     }
 
+    /* Login Screen Styles */
+    .login-container {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, var(--align-blue) 0%, #003d7a 100%);
+    }
+
+    .login-box {
+      background: white;
+      padding: 40px;
+      border-radius: 16px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+      max-width: 400px;
+      width: 90%;
+    }
+
+    .login-box h2 {
+      color: var(--align-blue);
+      margin-bottom: 24px;
+      text-align: center;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      color: #333;
+      font-weight: 500;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 14px;
+      transition: border-color 0.3s ease;
+    }
+
+    .form-group input:focus {
+      outline: none;
+      border-color: var(--align-blue);
+    }
+
+    .btn {
+      width: 100%;
+      padding: 12px;
+      background: var(--align-blue);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    .btn:hover {
+      background: #003d7a;
+    }
+
+    .btn-secondary {
+      background: white;
+      color: var(--align-blue);
+      border: 2px solid var(--align-blue);
+      margin-top: 12px;
+    }
+
+    .btn-secondary:hover {
+      background: var(--align-light-blue);
+    }
+
+    .error-message {
+      background: #ffebee;
+      color: #c62828;
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 16px;
+      font-size: 14px;
+      display: none;
+    }
+
+    .user-info {
+      background: white;
+      padding: 12px 20px;
+      border-radius: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      box-shadow: var(--shadow);
+    }
+
+    .user-email {
+      color: var(--align-blue);
+      font-weight: 600;
+    }
+
+    .btn-logout {
+      padding: 8px 16px;
+      background: #f44336;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .btn-logout:hover {
+      background: #d32f2f;
+    }
+
+    #app {
+      display: none;
+    }
+
+    #login-screen {
+      display: block;
+    }
+
+    /* Existing styles from previous version */
     .header {
       background: linear-gradient(135deg, var(--align-blue) 0%, #003d7a 100%);
       color: white;
@@ -49,7 +175,6 @@
       padding: 20px;
     }
 
-    /* Progress Dashboard */
     .dashboard {
       background: white;
       border-radius: 16px;
@@ -140,7 +265,7 @@
       border-radius: 4px;
       transition: width 0.4s ease;
     }
-    /* Tabs */
+
     .tabs {
       display: flex;
       gap: 8px;
@@ -168,7 +293,6 @@
       border-color: var(--align-blue);
     }
 
-    /* Week Picker */
     .week-picker {
       display: flex;
       gap: 8px;
@@ -199,7 +323,6 @@
       color: white;
     }
 
-    /* Task Tables */
     .task-section {
       margin-bottom: 24px;
     }
@@ -304,7 +427,6 @@
       color: #999;
     }
 
-    /* Mobile Responsive */
     @media (max-width: 768px) {
       .container {
         padding: 12px;
@@ -326,90 +448,137 @@
       .sub-progress {
         grid-template-columns: 1fr;
       }
+
+      .login-box {
+        padding: 24px;
+      }
     }
   </style>
 </head>
 <body>
-  <div class="header">
-    <h1>🦷 Clinical Onboarding Tracker</h1>
-    <p>Your 90-Day Learning Journey</p>
+  <!-- Login Screen -->
+  <div id="login-screen">
+    <div class="login-container">
+      <div class="login-box">
+        <h2>🦷 Clinical Onboarding Tracker</h2>
+        <div class="error-message" id="error-message"></div>
+        
+        <div id="login-form">
+          <div class="form-group">
+            <label>Email</label>
+            <input type="email" id="login-email" placeholder="your.email@example.com" />
+          </div>
+          <div class="form-group">
+            <label>Password</label>
+            <input type="password" id="login-password" placeholder="Enter your password" />
+          </div>
+          <button class="btn" onclick="loginUser()">Sign In</button>
+          <button class="btn btn-secondary" onclick="showSignup()">Create Account</button>
+        </div>
+
+        <div id="signup-form" style="display: none;">
+          <div class="form-group">
+            <label>Email</label>
+            <input type="email" id="signup-email" placeholder="your.email@example.com" />
+          </div>
+          <div class="form-group">
+            <label>Password</label>
+            <input type="password" id="signup-password" placeholder="Minimum 6 characters" />
+          </div>
+          <button class="btn" onclick="signupUser()">Create Account</button>
+          <button class="btn btn-secondary" onclick="showLogin()">Back to Sign In</button>
+        </div>
+      </div>
+    </div>
   </div>
 
-  <div class="container">
-    <!-- Progress Dashboard -->
-    <div class="dashboard">
-      <h2>📊 Progress Dashboard</h2>
-      <!-- Progress bars will go here -->
-      <!-- Overall Progress -->
-      <div class="progress-section">
-        <div class="progress-label">
-          <span><strong>Overall Completion</strong></span>
-          <span id="overall-percent">0%</span>
-        </div>
-        <div class="progress-bar-container">
-          <div class="progress-bar" id="overall-progress" style="width: 0%">
-            <div class="progress-text">0%</div>
+  <!-- Main App (hidden until logged in) -->
+  <div id="app">
+    <div class="header">
+      <h1>🦷 Clinical Onboarding Tracker</h1>
+      <p>Your 90-Day Learning Journey</p>
+    </div>
+
+    <div class="container">
+      <div class="user-info">
+        <span class="user-email" id="user-email"></span>
+        <button class="btn-logout" onclick="logoutUser()">Logout</button>
+      </div>
+
+      <div class="dashboard">
+        <h2>📊 Progress Dashboard</h2>
+        <div class="progress-section">
+          <div class="progress-label">
+            <span><strong>Overall Completion</strong></span>
+            <span id="overall-percent">0%</span>
+          </div>
+          <div class="progress-bar-container">
+            <div class="progress-bar" id="overall-progress" style="width: 0%">
+              <div class="progress-text">0%</div>
+            </div>
           </div>
         </div>
+        <div class="sub-progress" id="week-progress-cards"></div>
       </div>
 
-      <!-- Filter Progress -->
-      <div class="progress-section">
-        <div class="progress-label">
-          <span><strong>Filtered Progress</strong></span>
-          <span id="filtered-percent">0%</span>
+      <div class="tabs">
+        <div class="tab active" onclick="switchTab('pre-boarding')">Pre-boarding</div>
+        <div class="tab" onclick="switchTab('month-1')">Month 1</div>
+        <div class="tab" onclick="switchTab('month-2')">Month 2</div>
+        <div class="tab" onclick="switchTab('month-3')">Month 3</div>
+      </div>
+
+      <div id="pre-boarding" class="content-section active">
+        <div class="task-section">
+          <h3>📋 Pre-boarding Tasks</h3>
+          <div class="task-list" id="pre-boarding-tasks"></div>
         </div>
-        <div class="progress-bar-container">
-          <div class="progress-bar" id="filtered-progress" style="width: 0%">
-            <div class="progress-text">0%</div>
-          </div>
-        </div>
       </div>
 
-      <!-- Week Progress Cards -->
-      <div class="sub-progress" id="week-progress-cards"></div>
-    </div>
-
-    <!-- Tabs -->
-    <div class="tabs">
-      <div class="tab active" onclick="switchTab('pre-boarding')">Pre-boarding</div>
-      <div class="tab" onclick="switchTab('month-1')">Month 1</div>
-      <div class="tab" onclick="switchTab('month-2')">Month 2</div>
-      <div class="tab" onclick="switchTab('month-3')">Month 3</div>
-    </div>
-
-    <!-- Content Sections -->
-    <div id="pre-boarding" class="content-section active">
-      <div class="task-section">
-        <h3>📋 Pre-boarding Tasks</h3>
-        <div class="task-list" id="pre-boarding-tasks"></div>
+      <div id="month-1" class="content-section">
+        <div class="week-picker" id="month-1-weeks"></div>
+        <div id="month-1-content"></div>
       </div>
-    </div>
 
-    <div id="month-1" class="content-section">
-      <div class="week-picker" id="month-1-weeks"></div>
-      <div id="month-1-content"></div>
-    </div>
+      <div id="month-2" class="content-section">
+        <div class="week-picker" id="month-2-weeks"></div>
+        <div id="month-2-content"></div>
+      </div>
 
-    <div id="month-2" class="content-section">
-      <div class="week-picker" id="month-2-weeks"></div>
-      <div id="month-2-content"></div>
-    </div>
-
-    <div id="month-3" class="content-section">
-      <div class="week-picker" id="month-3-weeks"></div>
-      <div id="month-3-content"></div>
+      <div id="month-3" class="content-section">
+        <div class="week-picker" id="month-3-weeks"></div>
+        <div id="month-3-content"></div>
+      </div>
     </div>
   </div>
 
-  <!-- Sync Status Indicator -->
-  <div class="sync-status" id="sync-status">
-    <div class="sync-spinner"></div>
-    <span>Syncing to Google Sheets...</span>
-  </div>
+  <!-- Firebase SDKs -->
+  https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 
   <script>
-    // JavaScript logic starts here
+    // ========== FIREBASE CONFIGURATION ==========
+    // REPLACE THIS WITH YOUR FIREBASE CONFIG FROM STEP 2
+    const firebaseConfig = {
+        apiKey: "AIzaSyDvmuMGB5IMb_AVZ-HrleWVvCk0RUvDTME",
+        authDomain: "onboardingtracker-72f1a.firebaseapp.com",
+        projectId: "onboardingtracker-72f1a",
+        storageBucket: "onboardingtracker-72f1a.firebasestorage.app",
+        messagingSenderId: "573511577481",
+        appId: "1:573511577481:web:c45d4ab81d36dc3a22bb58"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
+    let currentUser = null;
+    let taskStates = {};
+    let currentTab = 'pre-boarding';
+    let currentWeek = { 'month-1': 1, 'month-2': 5, 'month-3': 9 };
+
+    // ========== TASK DATA ==========
     const taskData = {
       'pre-boarding': {
         invisalign: [
@@ -607,12 +776,116 @@
         }
       }
     };
-let taskStates = JSON.parse(localStorage.getItem('taskStates')) || {};
-    let currentTab = 'pre-boarding';
-    let currentWeek = { 'month-1': 1, 'month-2': 5, 'month-3': 9 };
 
-    const GOOGLE_SHEET_URL = 'YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE'; // Replace with your actual URL
+    // ========== AUTHENTICATION FUNCTIONS ==========
+    function showSignup() {
+      document.getElementById('login-form').style.display = 'none';
+      document.getElementById('signup-form').style.display = 'block';
+      hideError();
+    }
 
+    function showLogin() {
+      document.getElementById('login-form').style.display = 'block';
+      document.getElementById('signup-form').style.display = 'none';
+      hideError();
+    }
+
+    function showError(message) {
+      const errorEl = document.getElementById('error-message');
+      errorEl.textContent = message;
+      errorEl.style.display = 'block';
+    }
+
+    function hideError() {
+      document.getElementById('error-message').style.display = 'none';
+    }
+
+    async function signupUser() {
+      const email = document.getElementById('signup-email').value;
+      const password = document.getElementById('signup-password').value;
+
+      if (!email || !password) {
+        showError('Please enter email and password');
+        return;
+      }
+
+      try {
+        await auth.createUserWithEmailAndPassword(email, password);
+        showLogin();
+        showError('Account created! Please sign in.');
+      } catch (error) {
+        showError(error.message);
+      }
+    }
+
+    async function loginUser() {
+      const email = document.getElementById('login-email').value;
+      const password = document.getElementById('login-password').value;
+
+      if (!email || !password) {
+        showError('Please enter email and password');
+        return;
+      }
+
+      try {
+        await auth.signInWithEmailAndPassword(email, password);
+      } catch (error) {
+        showError(error.message);
+      }
+    }
+
+    function logoutUser() {
+      auth.signOut();
+    }
+
+    // ========== AUTH STATE LISTENER ==========
+    auth.onAuthStateChanged(async (user) => {
+      if (user) {
+        currentUser = user;
+        document.getElementById('login-screen').style.display = 'none';
+        document.getElementById('app').style.display = 'block';
+        document.getElementById('user-email').textContent = user.email;
+        await loadUserProgress();
+        init();
+      } else {
+        currentUser = null;
+        document.getElementById('login-screen').style.display = 'block';
+        document.getElementById('app').style.display = 'none';
+      }
+    });
+
+    // ========== FIRESTORE DATA FUNCTIONS ==========
+    async function loadUserProgress() {
+      if (!currentUser) return;
+      
+      try {
+        const doc = await db.collection('userProgress').doc(currentUser.uid).get();
+        if (doc.exists) {
+          taskStates = doc.data().tasks || {};
+        } else {
+          taskStates = {};
+        }
+      } catch (error) {
+        console.error('Error loading progress:', error);
+        taskStates = {};
+      }
+    }
+
+    async function saveUserProgress() {
+      if (!currentUser) return;
+
+      try {
+        await db.collection('userProgress').doc(currentUser.uid).set({
+          email: currentUser.email,
+          tasks: taskStates,
+          lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
+        });
+      } catch (error) {
+        console.error('Error saving progress:', error);
+      }
+    }
+
+    // ========== APP FUNCTIONS ==========
     function init() {
       renderPreBoarding();
       renderMonthWeeks('month-1', [1, 2, 3, 4]);
@@ -676,7 +949,7 @@ let taskStates = JSON.parse(localStorage.getItem('taskStates')) || {};
         </div>`;
     }
 
-    function toggleTask(id, name) {
+    async function toggleTask(id, name) {
       const current = taskStates[id] || {};
       const now = new Date().toISOString();
       const newState = {
@@ -684,14 +957,15 @@ let taskStates = JSON.parse(localStorage.getItem('taskStates')) || {};
         timestamp: !current.completed ? now : null
       };
       taskStates[id] = newState;
-      localStorage.setItem('taskStates', JSON.stringify(taskStates));
+      
+      await saveUserProgress();
+      
       if (currentTab === 'pre-boarding') {
         renderPreBoarding();
       } else {
         renderMonthContent(currentTab, currentWeek[currentTab]);
       }
       updateAllProgress();
-      syncToGoogleSheets(id, name, newState);
     }
 
     function switchTab(tab) {
@@ -781,30 +1055,6 @@ let taskStates = JSON.parse(localStorage.getItem('taskStates')) || {};
       const d = new Date(ts);
       return d.toLocaleString();
     }
-
-    function syncToGoogleSheets(id, name, state) {
-      if (GOOGLE_SHEET_URL === 'https://docs.google.com/spreadsheets/d/1m_yDg5QyvYq9MWJuTFEV0fWH_2hMuOAlEr7UhYsOZmo/edit?gid=0#gid=0') return;
-      const syncStatus = document.getElementById('sync-status');
-      syncStatus.classList.add('show');
-      fetch(GOOGLE_SHEET_URL, {
-        method: 'POST',
-        mode: 'no-cors',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          taskId: id,
-          taskName: name,
-          status: state.completed ? 'Completed' : 'Not Completed',
-          timestamp: state.timestamp || ''
-        })
-      }).finally(() => {
-        setTimeout(() => syncStatus.classList.remove('show'), 2000);
-      });
-    }
-
-    window.addEventListener('DOMContentLoaded', init);
   </script>
 </body>
 </html>
-    
-    
-    
