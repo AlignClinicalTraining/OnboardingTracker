@@ -340,4 +340,274 @@
     <div class="dashboard">
       <h2>📊 Progress Dashboard</h2>
       <!-- Progress bars will go here -->
+      <!-- Overall Progress -->
+      <div class="progress-section">
+        <div class="progress-label">
+          <span><strong>Overall Completion</strong></span>
+          <span id="overall-percent">0%</span>
+        </div>
+        <div class="progress-bar-container">
+          <div class="progress-bar" id="overall-progress" style="width: 0%">
+            <div class="progress-text">0%</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Filter Progress -->
+      <div class="progress-section">
+        <div class="progress-label">
+          <span><strong>Filtered Progress</strong></span>
+          <span id="filtered-percent">0%</span>
+        </div>
+        <div class="progress-bar-container">
+          <div class="progress-bar" id="filtered-progress" style="width: 0%">
+            <div class="progress-text">0%</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Week Progress Cards -->
+      <div class="sub-progress" id="week-progress-cards"></div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs">
+      <div class="tab active" onclick="switchTab('pre-boarding')">Pre-boarding</div>
+      <div class="tab" onclick="switchTab('month-1')">Month 1</div>
+      <div class="tab" onclick="switchTab('month-2')">Month 2</div>
+      <div class="tab" onclick="switchTab('month-3')">Month 3</div>
+    </div>
+
+    <!-- Content Sections -->
+    <div id="pre-boarding" class="content-section active">
+      <div class="task-section">
+        <h3>📋 Pre-boarding Tasks</h3>
+        <div class="task-list" id="pre-boarding-tasks"></div>
+      </div>
+    </div>
+
+    <div id="month-1" class="content-section">
+      <div class="week-picker" id="month-1-weeks"></div>
+      <div id="month-1-content"></div>
+    </div>
+
+    <div id="month-2" class="content-section">
+      <div class="week-picker" id="month-2-weeks"></div>
+      <div id="month-2-content"></div>
+    </div>
+
+    <div id="month-3" class="content-section">
+      <div class="week-picker" id="month-3-weeks"></div>
+      <div id="month-3-content"></div>
+    </div>
+  </div>
+
+  <!-- Sync Status Indicator -->
+  <div class="sync-status" id="sync-status">
+    <div class="sync-spinner"></div>
+    <span>Syncing to Google Sheets...</span>
+  </div>
+
+  <script>
+    // JavaScript logic starts here
+    const taskData = {
+      'pre-boarding': {
+        invisalign: [
+          'Save your own copy of onboarding materials',
+          'Share checklist with manager and local champion',
+          'Review welcome letter and onboarding overview',
+          'Set up access to learning resources'
+        ],
+        itero: []
+      },
+      'month-1': {
+        1: {
+          invisalign: [
+            'Meeting with manager',
+            'Clinical Systems Landscape: Tools & Platforms',
+            'Biomechanics in Orthodontics: Recorded Expert Session'
+          ],
+          itero: [
+            'Dental diploma',
+            'Dental Diploma Topics: Q&A and Clarification Session'
+          ]
+        },
+        2: {
+          invisalign: [],
+          itero: [
+            'Introduction to iTero customer training journey',
+            'Lumina Mastering iTero webinar part 1',
+            'Lumina Mastering iTero webinar part 2',
+            'Lumina Mastering iTero webinar part 3',
+            'Lumina experience workshop - Part 1 - theory',
+            'Lumina experience workshop - Part 2 - hands-on',
+            'Shadow Lumina ortho training (1)',
+            'Shadow Lumina ortho training (2)',
+            'Lumina self-reflection assessment',
+            'Lumina experience workshop - Part 3 - Training and insights'
+          ]
+        },
+        3: {
+          invisalign: [
+            'Deep dive on SmartForce features (thresholds, max velocity, hierarchy, G series)',
+            'E-learning Module 2',
+            'CCSE module',
+            'Deep dive on CCSE (templates and Flex Rx)',
+            'Workshop on Flex Rx and template editor',
+            'CC pro interface, in-face visualization and smile video modules',
+            'Use of 3D controls, CC live update and plan editor module',
+            'Workshop on 3D controls and plan editor',
+            'Warranty, AA process and clinical hold',
+            'Video on attachment placement and IPR'
+          ],
+          itero: ['CBCT integration module']
+        },
+        4: {
+          invisalign: [
+            'Crowding',
+            'Spacing',
+            'Open bite',
+            'Deep bite',
+            'AP correction Class II',
+            'AP correction Class III'
+          ],
+          itero: [
+            'Element Mastering iTero webinar part 1',
+            'Element Mastering iTero webinar part 2',
+            'Element Mastering iTero webinar part 3'
+          ]
+        }
+      },
+      'month-2': {
+        5: {
+          invisalign: [
+            'Lower incisor extraction',
+            'First premolar extraction',
+            'Invisalign Smile architect module',
+            'MA module',
+            'IF session',
+            'IPE TTT recording',
+            'Session on tx options for growing patients',
+            'Vivera module',
+            'Essentials and iGo (if needed)'
+          ],
+          itero: []
+        },
+        6: {
+          invisalign: [
+            'Other tools - myInvisalign app, Invisalign practice app, virtual care, SmileView, smile video, etc.',
+            'Patient communication webinar'
+          ],
+          itero: [
+            'Product: Installation and Hardware',
+            'Product: Scanning and Software',
+            'iTero ortho WF & tools (AOHS, NIRI and Demo cases)',
+            'iTero ortho WF & tools (Align Xray insight)',
+            'iTero ortho WF & tools (iosim Pro)',
+            'iTero ortho WF & tools (iosim Classic)',
+            'iTero ortho WF & tools (PA)',
+            'iTero ortho WF & tools (MIDC)',
+            'Additional topic: IPE, iGO & Q&A',
+            'Formulate iTero training 1'
+          ]
+        },
+        7: {
+          invisalign: [
+            'Workshop on attachment placement and IPR',
+            'Monitoring and troubleshooting',
+            'Shadowing during CC review',
+            'Shadowing during CC review',
+            'Shadowing during CC review'
+          ],
+          itero: [
+            'Ortho self-practice',
+            'Ortho dry-run',
+            'Ortho written assessment',
+            'Ortho role play - Lumina',
+            'Ortho role play - Element'
+          ]
+        },
+        8: {
+          invisalign: [
+            'Shadowing during CC review',
+            'Shadowing during CC review',
+            'Shadowing during CC review',
+            'Shadowing during CC review',
+            'Shadowing during CC review'
+          ],
+          itero: [
+            'E-learning Module 3 - Resto basic: Crown, veneer',
+            'E-learning Module 4 - Resto basic: Crown, bridge, dentures',
+            'E-learning Module 5 - Resto: Implant',
+            'Shadow Lumina resto training',
+            'Shadow Lumina resto training',
+            'Mastering Lumina webinar Resto part 1',
+            'Mastering Lumina webinar Resto part 2',
+            'Mastering Lumina webinar Resto part 3',
+            'iTero resto WF & tools (Basic - Lumina)',
+            'iTero resto WF & tools (Advanced - Denture & All-on-X)'
+          ]
+        }
+      },
+      'month-3': {
+        9: {
+          invisalign: [
+            'Shadowing during CC review',
+            'Shadowing during CC review',
+            'Shadowing during CC review',
+            'Shadowing during CC review',
+            'Shadowing during CC review'
+          ],
+          itero: [
+            'Mastering Element webinar Resto part 1',
+            'Mastering Element webinar Resto part 2',
+            'Mastering Element webinar Resto part 3',
+            'iTero resto WF & tools (Basic - Element)',
+            'iTero resto WF & tools (Advanced - Denture & All-on-X)',
+            'Formulate iTero training 2'
+          ]
+        },
+        10: {
+          invisalign: [
+            'Role play CC review',
+            'Role play CC review',
+            'Role play CC review',
+            'Role play CC review',
+            'Role play CC review'
+          ],
+          itero: [
+            'Resto self-practice',
+            'Resto dry run',
+            'Resto written assessment',
+            'Resto role play - Lumina',
+            'Resto role play - Element',
+            'CRM training',
+            'Documentation (SFDC ticketing)'
+          ]
+        },
+        11: {
+          invisalign: [
+            'Resto clinical webinar',
+            'E-learning module 6'
+          ],
+          itero: [
+            'Lab training webinar',
+            'Design suite webinar',
+            'Design suite Hands-on'
+          ]
+        },
+        12: {
+          invisalign: [
+            'Clinical evidence recording',
+            'Soft skills review'
+          ],
+          itero: [
+            'Publication'
+          ]
+        }
+      }
+    };
+
+    
+    
     
