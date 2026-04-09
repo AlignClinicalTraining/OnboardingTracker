@@ -97,6 +97,13 @@
       background: #003d7a;
     }
 
+    .btn-small {
+      width: auto;
+      padding: 8px 16px;
+      font-size: 14px;
+      margin-left: 12px;
+    }
+
     .error-message {
       background: #ffebee;
       color: #c62828;
@@ -135,6 +142,54 @@
 
     .btn-change:hover {
       background: #444;
+    }
+
+    /* Onboarding Date Section */
+    .onboarding-date-section {
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      margin-bottom: 16px;
+      box-shadow: var(--shadow);
+    }
+
+    .date-input-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+
+    .date-input-group label {
+      font-weight: 600;
+      color: var(--align-blue);
+      white-space: nowrap;
+    }
+
+    .date-input-group input[type="date"] {
+      padding: 8px 12px;
+      border: 2px solid var(--align-blue);
+      border-radius: 8px;
+      font-size: 14px;
+      flex: 1;
+      min-width: 150px;
+    }
+
+    .days-counter {
+      background: linear-gradient(135deg, var(--align-blue) 0%, #0076d6 100%);
+      color: white;
+      padding: 16px;
+      border-radius: 8px;
+      text-align: center;
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .days-counter .number {
+      font-size: 32px;
+      display: block;
+      margin-bottom: 4px;
     }
 
     #app {
@@ -196,6 +251,20 @@
       font-weight: 500;
     }
 
+    .progress-dates {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      color: #666;
+      margin-top: 8px;
+    }
+
+    .progress-dates span {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
     .progress-bar-container {
       width: 100%;
       height: 24px;
@@ -227,7 +296,7 @@
       font-weight: 600;
     }
 
-    /* New Monthly Buckets Styles */
+    /* Monthly Buckets Styles */
     .monthly-buckets {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -495,6 +564,19 @@
       .circle-label {
         font-size: 20px;
       }
+
+      .date-input-group {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .days-counter .number {
+        font-size: 24px;
+      }
+
+      .days-counter {
+        font-size: 16px;
+      }
     }
   </style>
 </head>
@@ -529,6 +611,19 @@
         <button class="btn-change" id="change-email-btn">Change Email</button>
       </div>
 
+      <!-- Onboarding Date Section -->
+      <div class="onboarding-date-section">
+        <div class="date-input-group">
+          <label for="onboarding-date-input">📅 Onboarding Start Date (Day 1):</label>
+          <input type="date" id="onboarding-date-input" />
+          <button class="btn btn-small" id="save-date-btn">Save Date</button>
+        </div>
+        <div class="days-counter" id="days-counter" style="display: none;">
+          <span class="number" id="days-number">-</span>
+          <span id="days-text">Days since your onboarding</span>
+        </div>
+      </div>
+
       <div class="dashboard">
         <h2>📊 Progress Dashboard</h2>
         
@@ -542,6 +637,10 @@
             <div class="progress-bar" id="overall-progress" style="width: 0%">
               <div class="progress-text">0%</div>
             </div>
+          </div>
+          <div class="progress-dates">
+            <span>🗓️ Start: <strong id="start-date-display">-</strong></span>
+            <span>🏁 End (12 weeks): <strong id="end-date-display">-</strong></span>
           </div>
         </div>
 
@@ -777,6 +876,7 @@ const firebaseConfig = {
   appId: "1:573511577481:web:c45d4ab81d36dc3a22bb58"
 };
 
+
     // Check if Firebase config is set
     let isFirebaseConfigured = firebaseConfig.apiKey !== "YOUR_API_KEY";
 
@@ -793,6 +893,7 @@ const firebaseConfig = {
 
     // ========== GLOBAL VARIABLES ==========
     let currentUserEmail = '';
+    let onboardingStartDate = '';
     let taskStates = {};
     let currentTab = 'pre-boarding';
     let currentWeek = { 'month-1': 1, 'month-2': 5, 'month-3': 9 };
@@ -999,6 +1100,7 @@ const firebaseConfig = {
     // ========== EMAIL & APP INITIALIZATION ==========
     document.getElementById('continue-btn').addEventListener('click', startApp);
     document.getElementById('change-email-btn').addEventListener('click', changeEmail);
+    document.getElementById('save-date-btn').addEventListener('click', saveOnboardingDate);
     
     // Allow Enter key to submit
     document.getElementById('user-email-input').addEventListener('keypress', function(e) {
@@ -1044,12 +1146,80 @@ const firebaseConfig = {
       }, 3000);
     }
 
+    // ========== ONBOARDING DATE FUNCTIONS ==========
+    async function saveOnboardingDate() {
+      const dateInput = document.getElementById('onboarding-date-input');
+      const selectedDate = dateInput.value;
+      
+      if (!selectedDate) {
+        alert('Please select a date');
+        return;
+      }
+
+      onboardingStartDate = selectedDate;
+      await saveUserProgress();
+      updateDaysCounter();
+      updateDateDisplays();
+    }
+
+    function updateDaysCounter() {
+      const counterEl = document.getElementById('days-counter');
+      const numberEl = document.getElementById('days-number');
+      
+      if (!onboardingStartDate) {
+        counterEl.style.display = 'none';
+        return;
+      }
+
+      const startDate = new Date(onboardingStartDate);
+      const today = new Date();
+      const diffTime = today - startDate;
+      const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24)) + 1; // +1 to make first day = Day 1
+
+      numberEl.textContent = diffDays;
+      counterEl.style.display = 'block';
+    }
+
+    function updateDateDisplays() {
+      const startDisplayEl = document.getElementById('start-date-display');
+      const endDisplayEl = document.getElementById('end-date-display');
+      
+      if (!onboardingStartDate) {
+        startDisplayEl.textContent = '-';
+        endDisplayEl.textContent = '-';
+        return;
+      }
+
+      const startDate = new Date(onboardingStartDate);
+      startDisplayEl.textContent = formatDate(startDate);
+      
+      // Calculate end date (12 weeks = 84 days after start)
+      const endDate = new Date(startDate);
+      endDate.setDate(endDate.getDate() + 84);
+      endDisplayEl.textContent = formatDate(endDate);
+    }
+
+    function formatDate(date) {
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      const year = date.getFullYear();
+      return `${month}/${day}/${year}`;
+    }
+
     // ========== FIRESTORE DATA FUNCTIONS ==========
     async function loadUserProgress() {
       if (!isFirebaseConfigured) {
         console.warn('Firebase not configured - using localStorage only');
-        const saved = localStorage.getItem('taskStates_' + sanitizeEmail(currentUserEmail));
-        taskStates = saved ? JSON.parse(saved) : {};
+        const saved = localStorage.getItem('userData_' + sanitizeEmail(currentUserEmail));
+        if (saved) {
+          const userData = JSON.parse(saved);
+          taskStates = userData.tasks || {};
+          onboardingStartDate = userData.onboardingStartDate || '';
+        } else {
+          taskStates = {};
+          onboardingStartDate = '';
+        }
+        loadOnboardingDate();
         init();
         return;
       }
@@ -1059,22 +1229,49 @@ const firebaseConfig = {
         const doc = await docRef.get();
         
         if (doc.exists) {
-          taskStates = doc.data().tasks || {};
+          const data = doc.data();
+          taskStates = data.tasks || {};
+          onboardingStartDate = data.onboardingStartDate || '';
         } else {
           taskStates = {};
+          onboardingStartDate = '';
         }
         
+        loadOnboardingDate();
         init();
       } catch (error) {
         console.error('Error loading progress:', error);
-        const saved = localStorage.getItem('taskStates_' + sanitizeEmail(currentUserEmail));
-        taskStates = saved ? JSON.parse(saved) : {};
+        const saved = localStorage.getItem('userData_' + sanitizeEmail(currentUserEmail));
+        if (saved) {
+          const userData = JSON.parse(saved);
+          taskStates = userData.tasks || {};
+          onboardingStartDate = userData.onboardingStartDate || '';
+        } else {
+          taskStates = {};
+          onboardingStartDate = '';
+        }
+        loadOnboardingDate();
         init();
       }
     }
 
+    function loadOnboardingDate() {
+      const dateInput = document.getElementById('onboarding-date-input');
+      if (onboardingStartDate) {
+        dateInput.value = onboardingStartDate;
+        updateDaysCounter();
+        updateDateDisplays();
+      }
+    }
+
     async function saveUserProgress() {
-      localStorage.setItem('taskStates_' + sanitizeEmail(currentUserEmail), JSON.stringify(taskStates));
+      const userData = {
+        email: currentUserEmail,
+        onboardingStartDate: onboardingStartDate,
+        tasks: taskStates
+      };
+      
+      localStorage.setItem('userData_' + sanitizeEmail(currentUserEmail), JSON.stringify(userData));
 
       if (!isFirebaseConfigured) {
         return;
@@ -1082,8 +1279,7 @@ const firebaseConfig = {
 
       try {
         await db.collection('userProgress').doc(sanitizeEmail(currentUserEmail)).set({
-          email: currentUserEmail,
-          tasks: taskStates,
+          ...userData,
           lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
         });
       } catch (error) {
@@ -1139,7 +1335,9 @@ const firebaseConfig = {
       let html = '';
       ['invisalign', 'itero'].forEach(type => {
         if (weekData[type] && weekData[type].length > 0) {
-          html += `<div class="task-section"><h3>${type === 'invisalign' ? '💎 Invisalign' : '📱 iTero'}</h3><div class="task-list">`;
+          const icon = type === 'invisalign' ? '🦷' : '🖥️';
+          const label = type === 'invisalign' ? 'Invisalign' : 'iTero';
+          html += `<div class="task-section"><h3>${icon} ${label}</h3><div class="task-list">`;
           weekData[type].forEach((task, i) => {
             const id = `${month}-week${week}-${type}-${i}`;
             html += renderTaskCard(id, task);
@@ -1155,7 +1353,7 @@ const firebaseConfig = {
       const state = taskStates[id] || {};
       const completed = state.completed ? 'completed' : '';
       const checked = state.completed ? 'checked' : '';
-      const timestamp = state.timestamp ? `<div class="task-timestamp">✓ Completed: ${formatTimestamp(state.timestamp)}</div>` : '';
+      const timestamp = state.timestamp ? `<div class="task-timestamp">✓ Completed: ${formatDateOnly(state.timestamp)}</div>` : '';
       const safeName = name.replace(/'/g, "&#39;").replace(/"/g, "&quot;");
       return `
         <div class="task-card ${completed}" onclick="toggleTask('${id}', '${safeName}')">
@@ -1210,18 +1408,12 @@ const firebaseConfig = {
       updateProgressBar('overall-progress', percent);
       document.getElementById('overall-percent').textContent = `${percent}%`;
       
-      // Update monthly buckets
       updateMonthlyProgress();
     }
 
     function updateMonthlyProgress() {
-      // Month 1 (Weeks 1-4)
       updateMonthProgress('month-1', 1, [1, 2, 3, 4]);
-      
-      // Month 2 (Weeks 5-8)
       updateMonthProgress('month-2', 2, [5, 6, 7, 8]);
-      
-      // Month 3 (Weeks 9-12)
       updateMonthProgress('month-3', 3, [9, 10, 11, 12]);
     }
 
@@ -1250,7 +1442,6 @@ const firebaseConfig = {
         
         const weekPercent = weekTotal ? Math.round((weekDone / weekTotal) * 100) : 0;
         
-        // Update week progress bar
         const weekBar = document.getElementById(`month${monthNum}-week${week}-bar`);
         const weekPercentLabel = document.getElementById(`month${monthNum}-week${week}-percent`);
         
@@ -1265,10 +1456,8 @@ const firebaseConfig = {
         }
       });
       
-      // Calculate month percentage
       const monthPercent = monthTotal ? Math.round((monthDone / monthTotal) * 100) : 0;
       
-      // Update month circular progress
       drawCircularProgress(`month${monthNum}-circle`, monthPercent);
       
       const monthLabel = document.getElementById(`month${monthNum}-percent-label`);
@@ -1287,17 +1476,14 @@ const firebaseConfig = {
       const radius = 50;
       const lineWidth = 10;
       
-      // Clear canvas
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       
-      // Draw background circle
       ctx.beginPath();
       ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
       ctx.strokeStyle = '#E6F2FF';
       ctx.lineWidth = lineWidth;
       ctx.stroke();
       
-      // Draw progress arc
       const progressAngle = (percent / 100) * 2 * Math.PI;
       ctx.beginPath();
       ctx.arc(centerX, centerY, radius, -0.5 * Math.PI, -0.5 * Math.PI + progressAngle);
@@ -1340,9 +1526,12 @@ const firebaseConfig = {
       }
     }
 
-    function formatTimestamp(ts) {
-      const d = new Date(ts);
-      return d.toLocaleString();
+    function formatDateOnly(timestamp) {
+      const d = new Date(timestamp);
+      const month = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      const year = d.getFullYear();
+      return `${month}/${day}/${year}`;
     }
   </script>
 </body>
