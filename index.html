@@ -607,7 +607,204 @@
         }
       }
     };
+let taskStates = JSON.parse(localStorage.getItem('taskStates')) || {};
+    let currentTab = 'pre-boarding';
+    let currentWeek = { 'month-1': 1, 'month-2': 5, 'month-3': 9 };
 
+    const GOOGLE_SHEET_URL = 'YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE'; // Replace with your actual URL
+
+    function init() {
+      renderPreBoarding();
+      renderMonthWeeks('month-1', [1, 2, 3, 4]);
+      renderMonthWeeks('month-2', [5, 6, 7, 8]);
+      renderMonthWeeks('month-3', [9, 10, 11, 12]);
+      renderMonthContent('month-1', 1);
+      updateAllProgress();
+    }
+
+    function renderPreBoarding() {
+      const container = document.getElementById('pre-boarding-tasks');
+      const tasks = taskData['pre-boarding'].invisalign;
+      container.innerHTML = tasks.map((task, i) => renderTaskCard(`pre-boarding-${i}`, task)).join('');
+    }
+
+    function renderMonthWeeks(month, weeks) {
+      const container = document.getElementById(`${month}-weeks`);
+      container.innerHTML = weeks.map(week => {
+        const active = currentWeek[month] === week ? 'active' : '';
+        return `<div class="week-btn ${active}" onclick="selectWeek('${month}', ${week})">Week ${week}</div>`;
+      }).join('');
+    }
+
+    function renderMonthContent(month, week) {
+      const container = document.getElementById(`${month}-content`);
+      const weekData = taskData[month][week];
+      if (!weekData) {
+        container.innerHTML = '<div class="empty-state">No tasks for this week</div>';
+        return;
+      }
+
+      let html = '';
+      ['invisalign', 'itero'].forEach(type => {
+        if (weekData[type] && weekData[type].length > 0) {
+          html += `<div class="task-section"><h3>${type === 'invisalign' ? '💎 Invisalign' : '📱 iTero'}</h3><div class="task-list">`;
+          weekData[type].forEach((task, i) => {
+            const id = `${month}-week${week}-${type}-${i}`;
+            html += renderTaskCard(id, task);
+          });
+          html += '</div></div>';
+        }
+      });
+
+      container.innerHTML = html;
+    }
+
+    function renderTaskCard(id, name) {
+      const state = taskStates[id] || {};
+      const completed = state.completed ? 'completed' : '';
+      const checked = state.completed ? 'checked' : '';
+      const timestamp = state.timestamp ? `<div class="task-timestamp">✓ Completed: ${formatTimestamp(state.timestamp)}</div>` : '';
+      return `
+        <div class="task-card ${completed}" onclick="toggleTask('${id}', '${name}')">
+          <div class="task-content">
+            <div class="checkbox ${checked}"></div>
+            <div class="task-info">
+              <div class="task-name">${name}</div>
+              ${timestamp}
+            </div>
+          </div>
+        </div>`;
+    }
+
+    function toggleTask(id, name) {
+      const current = taskStates[id] || {};
+      const now = new Date().toISOString();
+      const newState = {
+        completed: !current.completed,
+        timestamp: !current.completed ? now : null
+      };
+      taskStates[id] = newState;
+      localStorage.setItem('taskStates', JSON.stringify(taskStates));
+      if (currentTab === 'pre-boarding') {
+        renderPreBoarding();
+      } else {
+        renderMonthContent(currentTab, currentWeek[currentTab]);
+      }
+      updateAllProgress();
+      syncToGoogleSheets(id, name, newState);
+    }
+
+    function switchTab(tab) {
+      currentTab = tab;
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      event.target.classList.add('active');
+      document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
+      document.getElementById(tab).classList.add('active');
+    }
+
+    function selectWeek(month, week) {
+      currentWeek[month] = week;
+      renderMonthWeeks(month, Object.keys(taskData[month]).map(Number));
+      renderMonthContent(month, week);
+    }
+
+    function updateAllProgress() {
+      const total = getTotalTasks();
+      const done = getCompletedTasks();
+      const percent = total ? Math.round((done / total) * 100) : 0;
+      updateProgressBar('overall-progress', percent);
+      document.getElementById('overall-percent').textContent = `${percent}%`;
+      renderWeekProgressCards();
+    }
+
+    function getTotalTasks() {
+      let count = 0;
+      Object.keys(taskData).forEach(month => {
+        if (month === 'pre-boarding') {
+          count += taskData[month].invisalign.length;
+        } else {
+          Object.values(taskData[month]).forEach(week => {
+            ['invisalign', 'itero'].forEach(type => {
+              count += week[type]?.length || 0;
+            });
+          });
+        }
+      });
+      return count;
+    }
+
+    function getCompletedTasks() {
+      return Object.values(taskStates).filter(t => t.completed).length;
+    }
+
+    function updateProgressBar(id, percent) {
+      const bar = document.getElementById(id);
+      if (!bar) return;
+      bar.style.width = `${percent}%`;
+      const text = bar.querySelector('.progress-text');
+      if (text) text.textContent = `${percent}%`;
+      if (percent === 100) {
+        bar.classList.add('completed');
+      } else {
+        bar.classList.remove('completed');
+      }
+    }
+
+    function renderWeekProgressCards() {
+      const container = document.getElementById('week-progress-cards');
+      let html = '';
+      for (let week = 1; week <= 12; week++) {
+        const month = week <= 4 ? 'month-1' : week <= 8 ? 'month-2' : 'month-3';
+        const weekData = taskData[month][week];
+        if (!weekData) continue;
+        let total = 0, done = 0;
+        ['invisalign', 'itero'].forEach(type => {
+          weekData[type]?.forEach((task, i) => {
+            const id = `${month}-week${week}-${type}-${i}`;
+            total++;
+            if (taskStates[id]?.completed) done++;
+          });
+        });
+        const percent = total ? Math.round((done / total) * 100) : 0;
+        html += `
+          <div class="week-progress-card">
+            <h4>Week ${week} - ${percent}%</h4>
+            <div class="mini-progress">
+              <div class="mini-progress-bar" style="width: ${percent}%"></div>
+            </div>
+          </div>`;
+      }
+      container.innerHTML = html;
+    }
+
+    function formatTimestamp(ts) {
+      const d = new Date(ts);
+      return d.toLocaleString();
+    }
+
+    function syncToGoogleSheets(id, name, state) {
+      if (GOOGLE_SHEET_URL === 'https://docs.google.com/spreadsheets/d/1m_yDg5QyvYq9MWJuTFEV0fWH_2hMuOAlEr7UhYsOZmo/edit?gid=0#gid=0') return;
+      const syncStatus = document.getElementById('sync-status');
+      syncStatus.classList.add('show');
+      fetch(GOOGLE_SHEET_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          taskId: id,
+          taskName: name,
+          status: state.completed ? 'Completed' : 'Not Completed',
+          timestamp: state.timestamp || ''
+        })
+      }).finally(() => {
+        setTimeout(() => syncStatus.classList.remove('show'), 2000);
+      });
+    }
+
+    window.addEventListener('DOMContentLoaded', init);
+  </script>
+</body>
+</html>
     
     
     
