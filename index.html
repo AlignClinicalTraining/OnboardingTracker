@@ -421,6 +421,12 @@
       color: #999;
     }
 
+    .loading {
+      text-align: center;
+      padding: 20px;
+      color: var(--align-blue);
+    }
+
     @media (max-width: 768px) {
       .container {
         padding: 12px;
@@ -462,12 +468,12 @@
           <label>Email Address</label>
           <input type="email" id="user-email-input" placeholder="your.email@example.com" />
         </div>
-        <button class="btn" onclick="startApp()">Continue</button>
+        <button class="btn" id="continue-btn">Continue</button>
       </div>
     </div>
   </div>
 
-  <!-- Main App (hidden until email is entered) -->
+  <!-- Main App -->
   <div id="app">
     <div class="header">
       <h1>🦷 Clinical Onboarding Tracker</h1>
@@ -477,7 +483,7 @@
     <div class="container">
       <div class="user-info">
         <span class="user-email" id="current-user-email"></span>
-        <button class="btn-change" onclick="changeEmail()">Change Email</button>
+        <button class="btn-change" id="change-email-btn">Change Email</button>
       </div>
 
       <div class="dashboard">
@@ -496,11 +502,11 @@
         <div class="sub-progress" id="week-progress-cards"></div>
       </div>
 
-      <div class="tabs">
-        <div class="tab active" onclick="switchTab('pre-boarding')">Pre-boarding</div>
-        <div class="tab" onclick="switchTab('month-1')">Month 1</div>
-        <div class="tab" onclick="switchTab('month-2')">Month 2</div>
-        <div class="tab" onclick="switchTab('month-3')">Month 3</div>
+      <div class="tabs" id="tabs-container">
+        <div class="tab active" data-tab="pre-boarding">Pre-boarding</div>
+        <div class="tab" data-tab="month-1">Month 1</div>
+        <div class="tab" data-tab="month-2">Month 2</div>
+        <div class="tab" data-tab="month-3">Month 3</div>
       </div>
 
       <div id="pre-boarding" class="content-section active">
@@ -527,26 +533,36 @@
     </div>
   </div>
 
-  <script type="module">
-  // Import the functions you need from the SDKs you need
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
-  // TODO: Add SDKs for Firebase products that you want to use
-  // https://firebase.google.com/docs/web/setup#available-libraries
+  <!-- Firebase SDKs -->
+  https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js</script>
+  https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js</script>
 
-  // Your web app's Firebase configuration
-  const firebaseConfig = {
-    apiKey: "AIzaSyDvmuMGB5IMb_AVZ-HrleWVvCk0RUvDTME",
-    authDomain: "onboardingtracker-72f1a.firebaseapp.com",
-    projectId: "onboardingtracker-72f1a",
-    storageBucket: "onboardingtracker-72f1a.firebasestorage.app",
-    messagingSenderId: "573511577481",
-    appId: "1:573511577481:web:8ae9eb38cf6a818922bb58"
-  };
+  <script>
+    // ========== FIREBASE CONFIGURATION ==========
+    // TODO: Replace with your Firebase config from Firebase Console
+const firebaseConfig = {
+  apiKey: "AIzaSyDvmuMGB5IMb_AVZ-HrleWVvCk0RUvDTME",
+  authDomain: "onboardingtracker-72f1a.firebaseapp.com",
+  projectId: "onboardingtracker-72f1a",
+  storageBucket: "onboardingtracker-72f1a.appspot.com",
+  messagingSenderId: "573511577481",
+  appId: "1:573511577481:web:c45d4ab81d36dc3a22bb58"
+};
 
-  // Initialize Firebase
-  const app = initializeApp(firebaseConfig);
-</script>
-  
+    // Check if Firebase config is set
+    let isFirebaseConfigured = firebaseConfig.apiKey !== "YOUR_API_KEY";
+
+    // Initialize Firebase only if configured
+    if (isFirebaseConfigured) {
+      try {
+        firebase.initializeApp(firebaseConfig);
+        var db = firebase.firestore();
+      } catch (error) {
+        console.error("Firebase initialization error:", error);
+        isFirebaseConfigured = false;
+      }
+    }
+
     // ========== GLOBAL VARIABLES ==========
     let currentUserEmail = '';
     let taskStates = {};
@@ -593,15 +609,15 @@
         },
         3: {
           invisalign: [
-            'Deep dive on SmartForce features (thresholds, max velocity, hierarchy, G series)',
+            'Deep dive on SmartForce features',
             'E-learning Module 2',
             'CCSE module',
-            'Deep dive on CCSE (templates and Flex Rx)',
+            'Deep dive on CCSE',
             'Workshop on Flex Rx and template editor',
-            'CC pro interface, in-face visualization and smile video modules',
-            'Use of 3D controls, CC live update and plan editor module',
+            'CC pro interface modules',
+            'Use of 3D controls module',
             'Workshop on 3D controls and plan editor',
-            'Warranty, AA process and clinical hold',
+            'Warranty and AA process',
             'Video on attachment placement and IPR'
           ],
           itero: ['CBCT integration module']
@@ -633,19 +649,19 @@
             'IPE TTT recording',
             'Session on tx options for growing patients',
             'Vivera module',
-            'Essentials and iGo (if needed)'
+            'Essentials and iGo'
           ],
           itero: []
         },
         6: {
           invisalign: [
-            'Other tools - myInvisalign app, Invisalign practice app, virtual care, SmileView, smile video, etc.',
+            'Other tools - myInvisalign app',
             'Patient communication webinar'
           ],
           itero: [
             'Product: Installation and Hardware',
             'Product: Scanning and Software',
-            'iTero ortho WF & tools (AOHS, NIRI and Demo cases)',
+            'iTero ortho WF & tools (AOHS, NIRI)',
             'iTero ortho WF & tools (Align Xray insight)',
             'iTero ortho WF & tools (iosim Pro)',
             'iTero ortho WF & tools (iosim Classic)',
@@ -659,9 +675,9 @@
           invisalign: [
             'Workshop on attachment placement and IPR',
             'Monitoring and troubleshooting',
-            'Shadowing during CC review',
-            'Shadowing during CC review',
-            'Shadowing during CC review'
+            'Shadowing during CC review (1)',
+            'Shadowing during CC review (2)',
+            'Shadowing during CC review (3)'
           ],
           itero: [
             'Ortho self-practice',
@@ -673,51 +689,51 @@
         },
         8: {
           invisalign: [
-            'Shadowing during CC review',
-            'Shadowing during CC review',
-            'Shadowing during CC review',
-            'Shadowing during CC review',
-            'Shadowing during CC review'
+            'Shadowing during CC review (4)',
+            'Shadowing during CC review (5)',
+            'Shadowing during CC review (6)',
+            'Shadowing during CC review (7)',
+            'Shadowing during CC review (8)'
           ],
           itero: [
-            'E-learning Module 3 - Resto basic: Crown, veneer',
-            'E-learning Module 4 - Resto basic: Crown, bridge, dentures',
+            'E-learning Module 3 - Resto basic',
+            'E-learning Module 4 - Resto basic',
             'E-learning Module 5 - Resto: Implant',
-            'Shadow Lumina resto training',
-            'Shadow Lumina resto training',
+            'Shadow Lumina resto training (1)',
+            'Shadow Lumina resto training (2)',
             'Mastering Lumina webinar Resto part 1',
             'Mastering Lumina webinar Resto part 2',
             'Mastering Lumina webinar Resto part 3',
-            'iTero resto WF & tools (Basic - Lumina)',
-            'iTero resto WF & tools (Advanced - Denture & All-on-X)'
+            'iTero resto WF & tools (Basic)',
+            'iTero resto WF & tools (Advanced)'
           ]
         }
       },
       'month-3': {
         9: {
           invisalign: [
-            'Shadowing during CC review',
-            'Shadowing during CC review',
-            'Shadowing during CC review',
-            'Shadowing during CC review',
-            'Shadowing during CC review'
+            'Shadowing during CC review (9)',
+            'Shadowing during CC review (10)',
+            'Shadowing during CC review (11)',
+            'Shadowing during CC review (12)',
+            'Shadowing during CC review (13)'
           ],
           itero: [
             'Mastering Element webinar Resto part 1',
             'Mastering Element webinar Resto part 2',
             'Mastering Element webinar Resto part 3',
-            'iTero resto WF & tools (Basic - Element)',
-            'iTero resto WF & tools (Advanced - Denture & All-on-X)',
+            'iTero resto WF & tools (Element Basic)',
+            'iTero resto WF & tools (Element Advanced)',
             'Formulate iTero training 2'
           ]
         },
         10: {
           invisalign: [
-            'Role play CC review',
-            'Role play CC review',
-            'Role play CC review',
-            'Role play CC review',
-            'Role play CC review'
+            'Role play CC review (1)',
+            'Role play CC review (2)',
+            'Role play CC review (3)',
+            'Role play CC review (4)',
+            'Role play CC review (5)'
           ],
           itero: [
             'Resto self-practice',
@@ -753,6 +769,16 @@
     };
 
     // ========== EMAIL & APP INITIALIZATION ==========
+    document.getElementById('continue-btn').addEventListener('click', startApp);
+    document.getElementById('change-email-btn').addEventListener('click', changeEmail);
+    
+    // Allow Enter key to submit
+    document.getElementById('user-email-input').addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        startApp();
+      }
+    });
+
     function startApp() {
       const email = document.getElementById('user-email-input').value.trim();
       
@@ -792,6 +818,14 @@
 
     // ========== FIRESTORE DATA FUNCTIONS ==========
     async function loadUserProgress() {
+      if (!isFirebaseConfigured) {
+        console.warn('Firebase not configured - using localStorage only');
+        const saved = localStorage.getItem('taskStates_' + sanitizeEmail(currentUserEmail));
+        taskStates = saved ? JSON.parse(saved) : {};
+        init();
+        return;
+      }
+
       try {
         const docRef = db.collection('userProgress').doc(sanitizeEmail(currentUserEmail));
         const doc = await docRef.get();
@@ -805,12 +839,21 @@
         init();
       } catch (error) {
         console.error('Error loading progress:', error);
-        taskStates = {};
+        // Fallback to localStorage
+        const saved = localStorage.getItem('taskStates_' + sanitizeEmail(currentUserEmail));
+        taskStates = saved ? JSON.parse(saved) : {};
         init();
       }
     }
 
     async function saveUserProgress() {
+      // Save to localStorage as backup
+      localStorage.setItem('taskStates_' + sanitizeEmail(currentUserEmail), JSON.stringify(taskStates));
+
+      if (!isFirebaseConfigured) {
+        return;
+      }
+
       try {
         await db.collection('userProgress').doc(sanitizeEmail(currentUserEmail)).set({
           email: currentUserEmail,
@@ -834,6 +877,15 @@
       renderMonthWeeks('month-3', [9, 10, 11, 12]);
       renderMonthContent('month-1', 1);
       updateAllProgress();
+      setupTabListeners();
+    }
+
+    function setupTabListeners() {
+      document.querySelectorAll('.tab').forEach(tab => {
+        tab.addEventListener('click', function() {
+          switchTab(this.getAttribute('data-tab'));
+        });
+      });
     }
 
     function renderPreBoarding() {
@@ -878,8 +930,9 @@
       const completed = state.completed ? 'completed' : '';
       const checked = state.completed ? 'checked' : '';
       const timestamp = state.timestamp ? `<div class="task-timestamp">✓ Completed: ${formatTimestamp(state.timestamp)}</div>` : '';
+      const safeName = name.replace(/'/g, "&#39;").replace(/"/g, "&quot;");
       return `
-        <div class="task-card ${completed}" onclick="toggleTask('${id}', '${name.replace(/'/g, "\\'")}')">
+        <div class="task-card ${completed}" onclick="toggleTask('${id}', '${safeName}')">
           <div class="task-content">
             <div class="checkbox ${checked}"></div>
             <div class="task-info">
@@ -912,7 +965,7 @@
     function switchTab(tab) {
       currentTab = tab;
       document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-      event.target.classList.add('active');
+      document.querySelector(`[data-tab="${tab}"]`).classList.add('active');
       document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
       document.getElementById(tab).classList.add('active');
     }
